@@ -12,7 +12,7 @@ public class FireAudioResponse : MonoBehaviour
     void Update()
     {
         // consolidate spectral data to 8 partitions (1 partition for each fire)
-        int numPartitions = 1;
+        int numPartitions = 8;
         float[] aveMag = new float[numPartitions];
         float partitionIndx = 0;
         int numDisplayedBins = 512 / 2;
@@ -33,30 +33,37 @@ public class FireAudioResponse : MonoBehaviour
         // scale and bound the average magnitude.
         for(int i = 0; i < numPartitions; i++)
         {
-            aveMag[i] = 0.5f + aveMag[i] * 100;
+            aveMag[i] = 1.0f + aveMag[i] * 100;
             if (aveMag[i] > 100) 
             {
                 aveMag[i] = 100;
             }
-            Debug.Log(aveMag[i]);
         }
 
         // Map the magnitude to the fire based on name
         if (gameObject.name == "Fire") 
         {
-            // ParticleSystem ps = GetComponent<ParticleSystem>();
-            // var main = ps.main;
-            // main.startSize = 10 + aveMag[0];
-            
-            transform.localScale = new Vector3 (1, 1, aveMag[0]);
+            float scale = 1 + (aveMag[0] - 1) / 3;
+            if(scale > 1.75f) 
+            { 
+                scale = 1.75f; 
+            }
+            transform.localScale = new Vector3(1, 1, scale);
         } 
         for (int i = 1; i < numPartitions; i++) 
         {
             if (gameObject.name == "Fire (" + i + ")") 
             {
-                
-
-                // transform.localScale = new Vector3 (aveMag[i], aveMag[i], aveMag[i]);
+                float scale = 1 + (aveMag[i] - 1);
+                if(i < numPartitions / 2)
+                {
+                    scale = 1 + (aveMag[i] - 1) / 2;
+                }
+                if(scale > 1.75f) 
+                { 
+                   scale = 1.75f; 
+                }
+                transform.localScale = new Vector3(1, 1, scale);
             }
         }
     }
